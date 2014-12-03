@@ -3575,6 +3575,12 @@ public final class Settings {
          * @hide
          */
          
+        /**
+         * Quick Settings Smart Pulldown
+         * @hide
+         */
+        public static final String QS_SMART_PULLDOWN = "qs_smart_pulldown";         
+         
         /** 
          * Whether to allow one finger quick settings expansion on the right side of the statusbar.
          * @hide
