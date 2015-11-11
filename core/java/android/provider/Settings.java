@@ -3574,6 +3574,12 @@ public final class Settings {
          * Beginning of noobbuilds System Settings Additions
          * @hide
          */
+         
+        /**
+         * Enable double tap gesture anywhere on the lock screen put device to sleep
+         * @hide
+         */
+        public static final String DOUBLE_TAP_SLEEP_ANYWHERE = "double_tap_sleep_anywhere";         
 
         /**
          * Whether the phone ringtone should be played in an increasing manner
