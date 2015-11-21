@@ -3574,6 +3574,12 @@ public final class Settings {
          * Beginning of noobbuilds System Settings Additions
          * @hide
          */
+
+        /**
+         * Change volume up and down handlign based on rotation
+         * @hide
+         */
+        public static final String SWAP_VOLUME_BUTTONS = "swap_volume_buttons";
          
         /**
          * Quick Settings Smart Pulldown
