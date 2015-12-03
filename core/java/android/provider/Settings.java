@@ -3571,7 +3571,7 @@ public final class Settings {
         };
 
         /**
-         * Beginning of noob System Settings Additions
+         * Beginning of noobbuilds System Settings Additions
          * @hide
          */
 
@@ -3592,6 +3592,12 @@ public final class Settings {
          * @hide
          */
         public static final String INCREASING_RING_RAMP_UP_TIME = "increasing_ring_ramp_up_time";
+        
+        /**
+         * Boolean value whether to link ringtone and notification volume
+         * @hide
+         */
+        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";        
 
         /**
          * IMPORTANT: If you add a new public settings you also have to add it to
