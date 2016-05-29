@@ -22,6 +22,17 @@
     <string name="statusbar_icons_blacklist">Status bar icons</string>
     <!-- notification controls -->
     <string name="tuner_notification_control">Power notification controls</string>
+    <!-- Screenrecord Notification Ticker -->
+    <string name="screenrecord_notif_ticker">Screen is being recorded</string>
+    <!-- Screenrecord notification title -->
+    <string name="screenrecord_notif_title">Recording screen</string>
+    <!-- Screenrecord notification action: Stop -->
+    <string name="screenrecord_notif_stop">Stop</string>
+    <!-- Screenrecord notification action: show/hide pointer -->
+    <string name="screenrecord_notif_pointer_on">Show pointer</string>
+    <string name="screenrecord_notif_pointer_off">Hide pointer</string>
+    <!-- Screen record notification error title -->
+    <string name="screenrecord_notif_error">Unable to record screen</string>    
     <!-- Reboot/Recovery QS Tile -->
     <string name="quick_settings_reboot_label">Reboot</string>
     <string name="quick_settings_reboot_recovery_label">Recovery</string>
@@ -29,5 +40,5 @@
     <string name="quick_settings_screenshot_label">Screenshot</string>
     <!-- Expanded Desktop QS Tile -->
     <string name="quick_settings_expanded_desktop">Expanded</string>
-    <string name="quick_settings_expanded_desktop_off">Normal</string>            
+    <string name="quick_settings_expanded_desktop_off">Normal</string>                
 </resources>
