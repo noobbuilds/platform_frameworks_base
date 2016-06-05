@@ -20,6 +20,7 @@ import com.android.internal.app.AlertController.AlertParams;
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.util.EmergencyAffordanceManager;
+import com.android.internal.util.ThemeUtils;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 import com.android.internal.widget.LockPatternUtils;
@@ -107,6 +108,7 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener, DialogIn
     private final GlobalActionsManager mWindowManagerFuncs;
     private final AudioManager mAudioManager;
     private final IDreamManager mDreamManager;
+    private Context mUiContext;
 
     private ArrayList<Action> mItems;
     private ActionsDialog mDialog;
@@ -210,6 +212,12 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener, DialogIn
             mWindowManagerFuncs.onGlobalActionsShown();
             mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
         }
+    }
+
+    private Context getUiContext() {
+        mUiContext = ThemeUtils.createUiContext(mContext);
+        mUiContext.setTheme(android.R.style.Theme_DeviceDefault_Light_DarkActionBar);
+        return mUiContext != null ? mUiContext : mContext;
     }
 
     /**
@@ -336,12 +344,12 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener, DialogIn
 
         mAdapter = new MyAdapter();
 
-        AlertParams params = new AlertParams(mContext);
+        AlertParams params = new AlertParams(getUiContext());
         params.mAdapter = mAdapter;
         params.mOnClickListener = this;
         params.mForceInverseBackground = true;
 
-        ActionsDialog dialog = new ActionsDialog(mContext, params);
+        ActionsDialog dialog = new ActionsDialog(getUiContext(), params);
         dialog.setCanceledOnTouchOutside(false); // Handled by the custom class.
 
         dialog.getListView().setItemsCanFocus(true);
@@ -766,7 +774,8 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener, DialogIn
 
         public View getView(int position, View convertView, ViewGroup parent) {
             Action action = getItem(position);
-            return action.create(mContext, convertView, parent, LayoutInflater.from(mContext));
+            final Context context = getUiContext();
+            return action.create(context, convertView, parent, LayoutInflater.from(context));
         }
     }
 
