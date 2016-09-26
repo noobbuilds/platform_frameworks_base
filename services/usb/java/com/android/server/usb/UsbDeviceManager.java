@@ -37,6 +37,9 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbPort;
 import android.hardware.usb.UsbPortStatus;
+import android.net.NetworkUtils;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.FileUtils;
 import android.os.Handler;
@@ -64,6 +67,7 @@ import com.android.server.FgThread;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1223,6 +1227,14 @@ public class UsbDeviceManager {
                     CharSequence title = r.getText(titleRes);
                     CharSequence message = r.getText(
                             com.android.internal.R.string.adb_active_generic_notification_message);
+                    if (netAdbActive) {
+                        WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+                        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                        if (wifiInfo != null) {
+                            InetAddress address = NetworkUtils.intToInetAddress(wifiInfo.getIpAddress());
+                            message = "IP: " + address.getHostAddress() + ":5555";
+                        }
+                    }
 
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK

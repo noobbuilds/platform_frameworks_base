@@ -21,4 +21,10 @@
     <string name="global_action_restart_advanced">Advanced reboot</string>
     <string name="global_action_restart_recovery">Recovery</string>
     <string name="global_action_restart_bootloader">Bootloader</string>
+
+    <!-- ADB network tile -->
+    <string name="quick_settings_adb_network">ADB network</string>
+    <string name="quick_settings_network_adb_enabled_label">Adb over Net</string>
+    <string name="quick_settings_network_adb_disabled_label">Adb over Net</string>
+
 </resources>
