@@ -3582,6 +3582,12 @@ public final class Settings {
         public static final String SWAP_VOLUME_BUTTONS = "swap_volume_buttons";
          
         /**
+         * Whether to allow screen record chord to take selectable screenshots
+         * @hide
+         */
+        public static final String SCREENRECORD_CHORD_TYPE = "screenrecord_chord_type";         
+         
+        /**
          * Quick Settings Smart Pulldown
          * @hide
          */
@@ -6554,7 +6560,7 @@ public final class Settings {
          * Beginning of noobbuilds Secure Settings Additions
          * @hide
          */
-
+         
         /**
          * Whether to display the ADB notification.
          * @hide
