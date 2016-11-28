@@ -18,4 +18,6 @@
 <resources>
     <!-- carrier label text height -->
     <dimen name="status_bar_carrier_height">14dp</dimen>
+    <!-- QS title visibility -->
+    <dimen name="qs_tile_height_wo_label">48dp</dimen>
 </resources>
