@@ -3585,6 +3585,12 @@ public final class Settings {
          */
 
         /**
+         * Manual override picture to use
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER_IMAGE = "status_bar_custom_header_image";
+
+        /**
          * Whether to use the custom status bar header or not
          * @hide
          */
