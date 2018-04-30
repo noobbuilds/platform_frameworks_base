@@ -2057,4 +2057,14 @@
     <string name="touch_filtered_warning">Because an app is obscuring a permission request, Settings
         can’t verify your response.</string>
 
+    <string name="elmyra_raw_sensor_string_type">com.google.sensor.elmyra.raw</string>
+    <string name="elmyra_sensor_string_type">com.google.sensor.elmyra.sensor</string>
+    <string name="google_camera_app_package_name">com.google.android.GoogleCamera</string>
+    <string name="google_camera_elmyra_feedback_flag">enable_elmyra_feedback_for_camera</string>
+    <string name="google_camera_elmyra_intent_action">com.google.android.systemui.elmyra.CAMERA_ACTION</string>
+    <string name="google_camera_handled_elmyra_flag">camera_handles_elmyra_action</string>
+    <string name="google_services_wallpaper_permission"><b>Allow Google Live wallpapers to respond to your location</b> by accessing Google’s location service.</string>
+    <string name="google_services_wallpaper_permission_dialog_text">You can turn access to Google’s location service for Live wallpapers on or off by going to Settings > Apps > System Apps from the overflow menu > Live data wallpapers / Live Earth Wallpapers, then tap Permissions.</string>
+    <string name="secure_settings_disable_camera_action_key">systemui.google.elmyra_disable_camera_action</string>
+
 </resources>

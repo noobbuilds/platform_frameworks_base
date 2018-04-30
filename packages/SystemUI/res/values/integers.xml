@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="elmyra_charging_gate_duration">500</integer>
+    <integer name="elmyra_false_prime_window">50</integer>
+    <integer name="elmyra_gesture_cooldown_time">450</integer>
+    <integer name="elmyra_history_event_capacity">50</integer>
+    <integer name="elmyra_history_raw_duration">6</integer>
+    <integer name="elmyra_history_snapshot_capacity">5</integer>
+    <integer name="elmyra_history_snapshot_delay">250</integer>
+    <integer name="elmyra_keyguard_proximity_threshold">5</integer>
+    <integer name="elmyra_system_key_gate_duration">500</integer>
+    <integer name="elmyra_usb_gate_duration">500</integer>
+</resources>

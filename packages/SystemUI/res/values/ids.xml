@@ -87,5 +87,18 @@
     <item type="id" name="action_snooze_long"/>
     <item type="id" name="action_snooze_longer"/>
     <item type="id" name="action_snooze_assistant_suggestion_1"/>
+
+    <!-- Elmyra feedback  -->
+    <item type="id" name="elmyra_feedback_background">false</item>
+    <item type="id" name="elmyra_feedback_blue">false</item>
+    <item type="id" name="elmyra_feedback_green">false</item>
+    <item type="id" name="elmyra_feedback_red">false</item>
+    <item type="id" name="elmyra_feedback_view">false</item>
+    <item type="id" name="elmyra_feedback_yellow">false</item>
+    <item type="id" name="lockscreen_opa">false</item>
+    <item type="id" name="white_cutout">false</item>
+    <item type="id" name="halo">false</item>
+
+
 </resources>
 
