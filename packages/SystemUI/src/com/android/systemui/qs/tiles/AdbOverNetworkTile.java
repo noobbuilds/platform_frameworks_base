@@ -89,7 +89,7 @@ public class AdbOverNetworkTile extends QSTileImpl<BooleanState> {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.AQUA;
+        return MetricsEvent.NOOB;
     }
 
     @Override
