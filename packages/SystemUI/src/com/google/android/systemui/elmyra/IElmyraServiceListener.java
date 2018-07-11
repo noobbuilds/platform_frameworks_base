@@ -1,97 +1,86 @@
 package com.google.android.systemui.elmyra;
 
-import android.os.Parcel;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.IInterface;
+import android.os.Parcel;
+import android.os.RemoteException;
 
-public interface IElmyraServiceListener extends IInterface
-{
+public interface IElmyraServiceListener extends IInterface {
+
     void launchAssistant() throws RemoteException;
-    
-    void setListener(final IBinder p0, final IBinder p1) throws RemoteException;
-    
-    public abstract static class Stub extends Binder implements IElmyraServiceListener
-    {
+
+    void setListener(IBinder iBinder, IBinder iBinder2) throws RemoteException;
+
+    public static abstract class Stub extends Binder implements IElmyraServiceListener {
+
         public Stub() {
-            this.attachInterface((IInterface)this, "com.google.android.systemui.elmyra.IElmyraServiceListener");
+            attachInterface(this, "com.google.android.systemui.elmyra.IElmyraServiceListener");
         }
-        
-        public static IElmyraServiceListener asInterface(final IBinder binder) {
-            if (binder == null) {
+
+        public static IElmyraServiceListener asInterface(IBinder iBinder) {
+            if (iBinder == null) {
                 return null;
             }
-            final IInterface queryLocalInterface = binder.queryLocalInterface("com.google.android.systemui.elmyra.IElmyraServiceListener");
-            if (queryLocalInterface != null && queryLocalInterface instanceof IElmyraServiceListener) {
-                return (IElmyraServiceListener)queryLocalInterface;
-            }
-            return new Proxy(binder);
+            IInterface queryLocalInterface = iBinder.queryLocalInterface("com.google.android.systemui.elmyra.IElmyraServiceListener");
+            return (queryLocalInterface == null || !(queryLocalInterface instanceof IElmyraServiceListener)) ? new Proxy(iBinder) : (IElmyraServiceListener) queryLocalInterface;
         }
-        
+
         public IBinder asBinder() {
-            return (IBinder)this;
+            return this;
         }
-        
-        public boolean onTransact(final int n, final Parcel parcel, final Parcel parcel2, final int n2) throws RemoteException {
-            switch (n) {
-                default: {
-                    return super.onTransact(n, parcel, parcel2, n2);
-                }
-                case 1598968902: {
+
+        public boolean onTransact(int i, Parcel parcel, Parcel parcel2, int i2) throws RemoteException {
+            switch (i) {
+                case 1:
+                    parcel.enforceInterface("com.google.android.systemui.elmyra.IElmyraServiceListener");
+                    setListener(parcel.readStrongBinder(), parcel.readStrongBinder());
+                    return true;
+                case 2:
+                    parcel.enforceInterface("com.google.android.systemui.elmyra.IElmyraServiceListener");
+                    launchAssistant();
+                    return true;
+                case 1598968902:
                     parcel2.writeString("com.google.android.systemui.elmyra.IElmyraServiceListener");
                     return true;
-                }
-                case 1: {
-                    parcel.enforceInterface("com.google.android.systemui.elmyra.IElmyraServiceListener");
-                    this.setListener(parcel.readStrongBinder(), parcel.readStrongBinder());
-                    return true;
-                }
-                case 2: {
-                    parcel.enforceInterface("com.google.android.systemui.elmyra.IElmyraServiceListener");
-                    this.launchAssistant();
-                    return true;
-                }
+                default:
+                    return super.onTransact(i, parcel, parcel2, i2);
             }
         }
-        
-        private static class Proxy implements IElmyraServiceListener
-        {
+
+        private static class Proxy implements IElmyraServiceListener {
             private IBinder mRemote;
-            
-            Proxy(final IBinder mRemote) {
-                this.mRemote = mRemote;
+
+            Proxy(IBinder iBinder) {
+                this.mRemote = iBinder;
             }
-            
+
             public IBinder asBinder() {
                 return this.mRemote;
             }
-            
-            @Override
+
             public void launchAssistant() throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken("com.google.android.systemui.elmyra.IElmyraServiceListener");
-                    this.mRemote.transact(2, obtain, (Parcel)null, 1);
-                }
-                finally {
+                    this.mRemote.transact(2, obtain, null, 1);
+                } finally {
                     obtain.recycle();
                 }
             }
-            
-            @Override
-            public void setListener(final IBinder binder, final IBinder binder2) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+
+            public void setListener(IBinder iBinder, IBinder iBinder2) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken("com.google.android.systemui.elmyra.IElmyraServiceListener");
-                    obtain.writeStrongBinder(binder);
-                    obtain.writeStrongBinder(binder2);
-                    this.mRemote.transact(1, obtain, (Parcel)null, 1);
-                }
-                finally {
+                    obtain.writeStrongBinder(iBinder);
+                    obtain.writeStrongBinder(iBinder2);
+                    this.mRemote.transact(1, obtain, null, 1);
+                } finally {
                     obtain.recycle();
                 }
             }
         }
     }
 }
+

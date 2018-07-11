@@ -48,13 +48,13 @@ public class SLPIGestureSensor implements Dumpable, GestureSensor
     private SensorManager mSensorManager;
     private android.hardware.Sensor mWakeSensor;
     private SensorEventListener mWakeSensorListener;
-    
+
     public SLPIGestureSensor(final Context mContext) {
         this.mReconfigures = 0;
         this.mSensorListener = (SensorEventListener)new SensorEventListener() {
             public void onAccuracyChanged(final android.hardware.Sensor sensor, int n) {
             }
-            
+
             public void onSensorChanged(final SensorEvent sensorEvent) {
                 SLPIGestureSensor.this.onSensorEvent(sensorEvent);
             }
@@ -62,7 +62,7 @@ public class SLPIGestureSensor implements Dumpable, GestureSensor
         this.mWakeSensorListener = (SensorEventListener)new SensorEventListener() {
             public void onAccuracyChanged(final android.hardware.Sensor sensor, int n) {
             }
-            
+
             public void onSensorChanged(final SensorEvent sensorEvent) {
             }
         };

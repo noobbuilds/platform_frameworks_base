@@ -1,134 +1,121 @@
 package com.google.android.systemui.elmyra;
 
-import android.annotation.SuppressLint;
-import android.os.IBinder.DeathRecipient;
+import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
-import android.app.Service;
 
-public class ElmyraServiceProxy extends Service
-{
-    private final IElmyraService.Stub mBinder;
-    private List<ElmyraServiceListener> mElmyraServiceListeners;
-    
+public class ElmyraServiceProxy extends Service {
+    private static List<ElmyraServiceListener> mElmyraServiceListeners;
+    private IElmyraService.Stub mBinder;
+
     public ElmyraServiceProxy() {
-        this.mElmyraServiceListeners = new ArrayList<ElmyraServiceListener>();
-        this.mBinder = new IElmyraService.Stub() {
+        mElmyraServiceListeners = new ArrayList<>();
+        mBinder = new IElmyraService.Stub() {
+
             public void launchAssistant() {
-                ElmyraServiceProxy.this.checkPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE");
+                checkPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE");
                 try {
-                    for (int i = ElmyraServiceProxy.this.mElmyraServiceListeners.size() - 1; i >= 0; --i) {
-                        final IElmyraServiceListener listener = ((ElmyraServiceListener)ElmyraServiceProxy.this.mElmyraServiceListeners.get(i)).getListener();
+                    for (int size = mElmyraServiceListeners.size() - 1; size >= 0; size--) {
+                        IElmyraServiceListener listener = mElmyraServiceListeners.get(size).getListener();
                         if (listener == null) {
-                            ElmyraServiceProxy.this.mElmyraServiceListeners.remove(i);
-                        }
-                        else {
+                            mElmyraServiceListeners.remove(size);
+                        } else {
                             listener.launchAssistant();
                         }
                     }
-                }
-                catch (RemoteException ex) {
-                    Log.e("Elmyra/ElmyraServiceProxy", "Error launching assistant", (Throwable)ex);
+                } catch (Throwable e) {
+                    Log.e("Elmyra/ElmyraServiceProxy", "Error launching assistant", e);
                 }
             }
-            
-            public void registerListener(final IBinder binder, final IBinder binder2) {
-                ElmyraServiceProxy.this.checkPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE");
-                if (binder == null) {
+
+            public void registerListener(IBinder iBinder, IBinder iBinder2) {
+                checkPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE");
+                if (iBinder == null) {
                     Log.w("Elmyra/ElmyraServiceProxy", "token should not be null");
-                    return;
-                }
-                if (binder2 == null) {
-                    for (int i = 0; i < ElmyraServiceProxy.this.mElmyraServiceListeners.size(); ++i) {
-                        if (binder.equals(((ElmyraServiceListener)ElmyraServiceProxy.this.mElmyraServiceListeners.get(i)).getToken())) {
-                            ((ElmyraServiceListener)ElmyraServiceProxy.this.mElmyraServiceListeners.get(i)).unlinkToDeath();
-                            ElmyraServiceProxy.this.mElmyraServiceListeners.remove(i);
-                            break;
+                } else if (iBinder2 == null) {
+                    for (int i = 0; i < mElmyraServiceListeners.size(); i++) {
+                        if (iBinder.equals(mElmyraServiceListeners.get(i).getToken())) {
+                            mElmyraServiceListeners.get(i).unlinkToDeath();
+                            mElmyraServiceListeners.remove(i);
+                            return;
                         }
                     }
-                }
-                else {
-                    ElmyraServiceProxy.this.mElmyraServiceListeners.add(new ElmyraServiceListener(binder, IElmyraServiceListener.Stub.asInterface(binder2)));
+                } else {
+                    mElmyraServiceListeners.add(new ElmyraServiceListener(iBinder, IElmyraServiceListener.Stub.asInterface(iBinder2)));
                 }
             }
-            
-            public void registerSettingsListener(final IBinder binder, final IBinder binder2) {
-                ElmyraServiceProxy.this.checkPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE");
+
+            public void registerSettingsListener(IBinder iBinder, IBinder iBinder2) {
+                checkPermission("com.google.android.elmyra.permission.CONFIGURE_ASSIST_GESTURE");
                 try {
-                    for (int i = ElmyraServiceProxy.this.mElmyraServiceListeners.size() - 1; i >= 0; --i) {
-                        final IElmyraServiceListener listener = ((ElmyraServiceListener)ElmyraServiceProxy.this.mElmyraServiceListeners.get(i)).getListener();
+                    for (int size = mElmyraServiceListeners.size() - 1; size >= 0; size--) {
+                        IElmyraServiceListener listener = mElmyraServiceListeners.get(size).getListener();
                         if (listener == null) {
-                            ElmyraServiceProxy.this.mElmyraServiceListeners.remove(i);
-                        }
-                        else {
-                            listener.setListener(binder, binder2);
+                            mElmyraServiceListeners.remove(size);
+                        } else {
+                            listener.setListener(iBinder, iBinder2);
                         }
                     }
-                }
-                catch (RemoteException ex) {
-                    Log.e("Elmyra/ElmyraServiceProxy", "Action isn't connected", (Throwable)ex);
+                } catch (Throwable e) {
+                    Log.e("Elmyra/ElmyraServiceProxy", "Action isn't connected", e);
                 }
             }
         };
     }
-    
-    private void checkPermission(final String s) {
-        this.enforceCallingOrSelfPermission(s, "Must have " + s + " permission");
+
+    private void checkPermission(String str) {
+        enforceCallingOrSelfPermission(str, "Must have " + str + " permission");
     }
-    
-    public IBinder onBind(final Intent intent) {
-        return (IBinder)this.mBinder;
+
+    public IBinder onBind(Intent intent) {
+        return mBinder;
     }
-    
-    @SuppressLint("WrongConstant")
-    public int onStartCommand(final Intent intent, final int n, final int n2) {
-        return 0;
+
+    public int onStartCommand(Intent intent, int i, int i2) {
+        return START_STICKY_COMPATIBILITY;
     }
-    
-    private class ElmyraServiceListener implements IBinder.DeathRecipient
-    {
+
+    private class ElmyraServiceListener implements IBinder.DeathRecipient {
         private IElmyraServiceListener mListener;
         private IBinder mToken;
-        
-        ElmyraServiceListener(final IBinder mToken, final IElmyraServiceListener mListener) {
-            this.mToken = mToken;
-            this.mListener = mListener;
-            this.linkToDeath();
+
+        ElmyraServiceListener(IBinder iBinder, IElmyraServiceListener iElmyraServiceListener) {
+            mToken = iBinder;
+            mListener = iElmyraServiceListener;
+            linkToDeath();
         }
-        
+
         private void linkToDeath() {
-            if (this.mToken == null) {
-                return;
-            }
-            try {
-                this.mToken.linkToDeath((IBinder.DeathRecipient)this, 0);
-            }
-            catch (RemoteException ex) {
-                Log.e("Elmyra/ElmyraServiceProxy", "Unable to linkToDeath", (Throwable)ex);
+            if (mToken != null) {
+                try {
+                    mToken.linkToDeath(this, 0);
+                } catch (Throwable e) {
+                    Log.e("Elmyra/ElmyraServiceProxy", "Unable to linkToDeath", e);
+                }
             }
         }
-        
+
         public void binderDied() {
             Log.w("Elmyra/ElmyraServiceProxy", "ElmyraServiceListener binder died");
-            this.mToken = null;
-            this.mListener = null;
+            mToken = null;
+            mListener = null;
         }
-        
+
         public IElmyraServiceListener getListener() {
-            return this.mListener;
+            return mListener;
         }
-        
+
         public IBinder getToken() {
-            return this.mToken;
+            return mToken;
         }
-        
-        public void unlinkToDeath() {
-            if (this.mToken != null) {
-                this.mToken.unlinkToDeath((IBinder.DeathRecipient)this, 0);
+
+        void unlinkToDeath() {
+            if (mToken != null) {
+                mToken.unlinkToDeath(this, 0);
             }
         }
     }
