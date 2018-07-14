@@ -1,40 +1,38 @@
 package com.google.android.systemui;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
-import android.content.IntentFilter;
-import android.os.UserHandle;
 import android.os.RemoteException;
-import android.provider.Settings;
-import android.provider.Settings.Secure;
-import android.content.ComponentName;
-import com.android.internal.app.AssistUtils;
-import android.util.Log;
-import com.android.internal.widget.ILockSettings.Stub;
 import android.os.ServiceManager;
-import java.util.ArrayList;
-import com.android.internal.widget.ILockSettings;
-import java.util.List;
-import android.content.Context;
-import android.content.ContentResolver;
-import android.database.ContentObserver;
-import android.content.BroadcastReceiver;
+import android.provider.Settings;
+import android.util.Log;
 
-public class OpaEnabledReceiver
-{
-    private final BroadcastReceiver mBroadcastReceiver;
-    private final ContentObserver mContentObserver;
-    private final ContentResolver mContentResolver;
-    private final Context mContext;
+import com.android.internal.app.AssistUtils;
+import com.android.internal.widget.ILockSettings;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class OpaEnabledReceiver {
+    private BroadcastReceiver mBroadcastReceiver;
+    private ContentObserver mContentObserver;
+    private ContentResolver mContentResolver;
+    private Context mContext;
     private boolean mIsAGSAAssistant;
     private boolean mIsOpaEligible;
     private boolean mIsOpaEnabled;
-    private final List<OpaEnabledListener> mListeners;
-    private final ILockSettings mLockSettings;
-    
-    public OpaEnabledReceiver(final Context mContext) {
-        this.mBroadcastReceiver = new OpaEnabledBroadcastReceiver((OpaEnabledBroadcastReceiver)null);
+    private List<OpaEnabledListener> mListeners;
+    private ILockSettings mLockSettings;
+
+    public OpaEnabledReceiver(Context mContext) {
+        this.mBroadcastReceiver = new OpaEnabledBroadcastReceiver((OpaEnabledBroadcastReceiver) null);
         this.mListeners = new ArrayList<OpaEnabledListener>();
         this.mContext = mContext;
         this.mContentResolver = this.mContext.getContentResolver();
@@ -44,62 +42,75 @@ public class OpaEnabledReceiver
         this.registerContentObserver();
         this.registerEnabledReceiver(-2);
     }
-    
-    private void dispatchOpaEnabledState(final Context context) {
+
+    private void dispatchOpaEnabledState(Context context) {
         Log.i("OpaEnabledReceiver", "Dispatching OPA eligble = " + this.mIsOpaEligible + "; AGSA = " + this.mIsAGSAAssistant + "; OPA enabled = " + this.mIsOpaEnabled);
         for (int i = 0; i < this.mListeners.size(); ++i) {
             this.mListeners.get(i).onOpaEnabledReceived(context, this.mIsOpaEligible, this.mIsAGSAAssistant, this.mIsOpaEnabled);
         }
     }
-    
-    private boolean isAGSACurrentAssistant(final Context context) {
-        final ComponentName assistComponentForUser = new AssistUtils(context).getAssistComponentForUser(-2);
-        return assistComponentForUser != null && "com.google.android.googlequicksearchbox/com.google.android.voiceinteraction.GsaVoiceInteractionService".equals(assistComponentForUser.flattenToString());
+
+    private boolean isAGSACurrentAssistant(Context context) {
+        boolean enabled;
+        ComponentName assistComponentForUser = new AssistUtils(context).getAssistComponentForUser(-2);
+        enabled = assistComponentForUser != null && "com.google.android.googlequicksearchbox/com.google.android.voiceinteraction.GsaVoiceInteractionService".equals(assistComponentForUser.flattenToString());
+        if (!enabled) {
+            Log.e("OPACHECK: ", "false but forcing true");
+            return true;
+        } else {
+            return true;
+        }
     }
-    
-    private boolean isOpaEligible(final Context context) {
-        boolean b = false;
+
+    private boolean isOpaEligible(Context context) {
+        boolean b = true;
         if (Settings.Secure.getInt(context.getContentResolver(), "systemui.google.opa_enabled", 0) != 0) {
             b = true;
         }
         return b;
     }
-    
-    private boolean isOpaEnabled(final Context context) {
+
+    private boolean isOpaEnabled(Context context) {
+        boolean enabled;
         try {
-            return this.mLockSettings.getBoolean("systemui.google.opa_user_enabled", false, -2);
-        }
-        catch (RemoteException ex) {
-            Log.e("OpaEnabledReceiver", "isOpaEnabled RemoteException", (Throwable)ex);
-            return false;
+            enabled = this.mLockSettings.getBoolean("systemui.google.opa_user_enabled", true, -2);
+            if (!enabled) {
+                Log.e("OPACHECK: ", "false but forcing true");
+                return true;
+            } else {
+                return true;
+            }
+        } catch (RemoteException ex) {
+            Log.e("OpaEnabledReceiver", "isOpaEnabled RemoteException", (Throwable) ex);
+            return true;
         }
     }
-    
+
     private void registerContentObserver() {
         this.mContentResolver.registerContentObserver(Settings.Secure.getUriFor("assistant"), false, this.mContentObserver);
     }
-    
-    private void registerEnabledReceiver(final int n) {
-     //   this.mContext.registerReceiverAsUser(this.mBroadcastReceiver, new UserHandle(n), new IntentFilter("com.google.android.systemui.OPA_ENABLED"), (String)null, (Handler)null);
-     //   this.mContext.registerReceiverAsUser(this.mBroadcastReceiver, new UserHandle(n), new IntentFilter("com.google.android.systemui.OPA_USER_ENABLED"), (String)null, (Handler)null);
+
+    private void registerEnabledReceiver(int n) {
+        this.mContext.registerReceiver(this.mBroadcastReceiver, new IntentFilter("com.google.android.systemui.OPA_ENABLED"), null, null);
+        this.mContext.registerReceiver(this.mBroadcastReceiver, new IntentFilter("com.google.android.systemui.OPA_USER_ENABLED"), null, null);
     }
-    
-    private void updateOpaEnabledState(final Context context) {
+
+    private void updateOpaEnabledState(Context context) {
         this.mIsOpaEligible = this.isOpaEligible(context);
         this.mIsAGSAAssistant = this.isAGSACurrentAssistant(context);
         this.mIsOpaEnabled = this.isOpaEnabled(context);
     }
-    
-    public void addOpaEnabledListener(final OpaEnabledListener opaEnabledListener) {
+
+    public void addOpaEnabledListener(OpaEnabledListener opaEnabledListener) {
         this.mListeners.add(opaEnabledListener);
         opaEnabledListener.onOpaEnabledReceived(this.mContext, this.mIsOpaEligible, this.mIsAGSAAssistant, this.mIsOpaEnabled);
     }
-    
+
     public void dispatchOpaEnabledState() {
         this.dispatchOpaEnabledState(this.mContext);
     }
-    
-    public void onUserSwitching(final int n) {
+
+    public void onUserSwitching(int n) {
         this.updateOpaEnabledState(this.mContext);
         this.dispatchOpaEnabledState(this.mContext);
         this.mContentResolver.unregisterContentObserver(this.mContentObserver);
@@ -107,45 +118,48 @@ public class OpaEnabledReceiver
         this.mContext.unregisterReceiver(this.mBroadcastReceiver);
         this.registerEnabledReceiver(n);
     }
-    
-    private class AssistantContentObserver extends ContentObserver
-    {
-        public AssistantContentObserver(final Context context) {
+
+    private class AssistantContentObserver extends ContentObserver {
+        public AssistantContentObserver(Context context) {
             super(new Handler(context.getMainLooper()));
         }
-        
-        public void onChange(final boolean b, final Uri uri) {
+
+        public void onChange(boolean b, Uri uri) {
             OpaEnabledReceiver.this.updateOpaEnabledState(OpaEnabledReceiver.this.mContext);
             OpaEnabledReceiver.this.dispatchOpaEnabledState(OpaEnabledReceiver.this.mContext);
         }
     }
-    
-    private class OpaEnabledBroadcastReceiver extends BroadcastReceiver
-    {
+
+    private class OpaEnabledBroadcastReceiver extends BroadcastReceiver {
         public OpaEnabledBroadcastReceiver(OpaEnabledBroadcastReceiver opaEnabledBroadcastReceiver) {
 
         }
 
-        public void onReceive(final Context context, final Intent intent) {
+        public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("com.google.android.systemui.OPA_ENABLED")) {
                 int n;
                 if (intent.getBooleanExtra("OPA_ENABLED", false)) {
                     n = 1;
-                }
-                else {
+                } else {
                     // set it to 1 by default because fuck google
                     //  n = 0;
                     n = 1;
                 }
                 Settings.Secure.getInt(context.getContentResolver(), "systemui.google.opa_enabled", n);
-            }
-            else if (intent.getAction().equals("com.google.android.systemui.OPA_USER_ENABLED")) {
-                final boolean booleanExtra = intent.getBooleanExtra("OPA_USER_ENABLED", false);
+            } else if (intent.getAction().equals("com.google.android.systemui.OPA_USER_ENABLED")) {
+                boolean booleanExtra = intent.getBooleanExtra("OPA_USER_ENABLED", false);
+                boolean enabled;
                 try {
-                    OpaEnabledReceiver.this.mLockSettings.setBoolean("systemui.google.opa_user_enabled", booleanExtra, -2);
-                }
-                catch (RemoteException ex) {
-                    Log.e("OpaEnabledReceiver", "RemoteException on OPA_USER_ENABLED", (Throwable)ex);
+                    enabled = OpaEnabledReceiver.this.mLockSettings.getBoolean("systemui.google.opa_user_enabled", true, -2);
+                    if (!enabled) {
+                        Log.e("OPACHECK: ", "false but forcing true");
+                        OpaEnabledReceiver.this.mLockSettings.setBoolean("systemui.google.opa_user_enabled", true, 1);
+                    } else {
+                        Log.e("OPACHECK: ", "false but forcing true part 2");
+
+                    }
+                } catch (RemoteException ex) {
+                    Log.e("OpaEnabledReceiver", "isOpaEnabled RemoteException", (Throwable) ex);
                 }
             }
             OpaEnabledReceiver.this.updateOpaEnabledState(context);
@@ -153,3 +167,4 @@ public class OpaEnabledReceiver
         }
     }
 }
+
